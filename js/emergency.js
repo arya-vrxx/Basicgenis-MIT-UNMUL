@@ -1,61 +1,118 @@
-// INIT: Render Panic Mode
-// =============================================
-function renderPanicMode() {
-    const stepsContainer = document.getElementById('instant-steps');
-    stepsContainer.innerHTML = instantSteps.map(step => `
-        <div class="bg-red-950/50 rounded-xl p-5 border border-red-500/30 shadow-sm">
-            <div class="flex items-center mb-3">
-                <div class="w-12 h-12 rounded-full bg-red-500/20 text-${step.color}-400 flex items-center justify-center text-xl font-black mr-4 border border-red-500/30">
-                    ${step.number}
-                </div>
-                <div><h4 class="font-black text-red-100 text-base">${step.title}</h4></div>
-            </div>
-            <p class="text-sm text-red-200/80 leading-relaxed"><i class="fa-solid ${step.icon} text-${step.color}-400 mr-2"></i>${step.desc}</p>
-        </div>
-    `).join('');
+/* =========================================================
+   emergency.js — Panel darurat: langkah instan, kontak, salin
+   ========================================================= */
+(function (global) {
+  'use strict';
 
-    const contactsContainer = document.getElementById('emergency-contacts');
-    contactsContainer.innerHTML = emergencyContacts.map(contact => `
-        <a href="tel:${contact.number}" class="flex items-center p-3 bg-red-950/40 rounded-lg border border-red-500/30 hover:border-red-400 hover:bg-red-900/60 transition-all duration-200 group">
-            <div class="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center mr-3 flex-shrink-0">
-                <i class="fa-solid ${contact.icon} text-sm"></i>
-            </div>
-            <div class="min-w-0">
-                <p class="font-bold text-red-100 text-sm">${contact.name}</p>
-                <p class="text-red-300 font-mono text-sm font-semibold">${contact.number}</p>
-            </div>
-            <i class="fa-solid fa-phone ml-auto text-red-400 opacity-50 group-hover:opacity-100 transition"></i>
-        </a>
-    `).join('');
-}
-renderPanicMode();
+  const IRK = global.IRK;
+  const { escapeHtml: esc, qs, on, flashButton } = IRK.util;
+  const { instantSteps, emergencyContacts } = IRK.data;
 
-// =============================================
-// FUNC: Panic Mode Toggle & Clipboard
-// =============================================
-function togglePanicMode() {
-    panicModeOpen = !panicModeOpen;
-    const details = document.getElementById('emergency-details');
-    const button = document.getElementById('panic-toggle-btn');
-    const chevron = document.getElementById('panic-chevron');
-    details.classList.toggle('hidden', !panicModeOpen);
-    button.setAttribute('aria-expanded', String(panicModeOpen));
-    button.firstChild.textContent = panicModeOpen ? 'Tutup ' : 'Buka ';
-    chevron.style.transform = panicModeOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-}
+  /* ---------- Render ---------- */
+  function renderSteps() {
+    const container = qs('#instant-steps');
+    if (!container) return;
 
-async function copyToClipboard(elementId, btnId) {
-    const textArea = document.getElementById(elementId);
-    const textToCopy = textArea.value;
-    const btn = document.getElementById(btnId);
-    const originalContent = btn.innerHTML;
+    container.innerHTML = instantSteps
+      .map(
+        (step, index) => `
+        <div class="step-card" data-tone="${esc(step.tone)}">
+          <div class="step-head">
+            <span class="step-num">${index + 1}</span>
+            <h4><i class="fa-solid ${esc(step.icon)}" aria-hidden="true"></i> ${esc(step.title)}</h4>
+          </div>
+          <p>${esc(step.desc)}</p>
+        </div>`
+      )
+      .join('');
+  }
+
+  function renderContacts() {
+    const container = qs('#emergency-contacts');
+    if (!container) return;
+
+    container.innerHTML = emergencyContacts
+      .map(
+        (contact) => `
+        <a class="contact-card" href="tel:${esc(contact.number)}"
+           aria-label="Telepon ${esc(contact.name)} di ${esc(contact.number)}">
+          <span class="contact-icon"><i class="fa-solid ${esc(contact.icon)}" aria-hidden="true"></i></span>
+          <span class="contact-body">
+            <strong>${esc(contact.name)}</strong>
+            <small>${esc(contact.number)}</small>
+          </span>
+          <i class="fa-solid fa-phone contact-call" aria-hidden="true"></i>
+        </a>`
+      )
+      .join('');
+  }
+
+  /* ---------- Toggle panel ---------- */
+  function setPanicOpen(open) {
+    const details = qs('#emergency-details');
+    const button = qs('#panic-toggle-btn');
+    const label = qs('#panic-toggle-text');
+    const chevron = qs('#panic-chevron');
+
+    if (details) details.classList.toggle('hidden', !open);
+    if (button) button.setAttribute('aria-expanded', String(open));
+    if (label) label.textContent = open ? 'Tutup' : 'Buka';
+    if (chevron) chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+
+  function togglePanicMode() {
+    const details = qs('#emergency-details');
+    setPanicOpen(details ? details.classList.contains('hidden') : true);
+  }
+
+  /* ---------- Salin teks ---------- */
+  async function copyText(text, button, successLabel) {
     try {
-        await navigator.clipboard.writeText(textToCopy);
-        btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Berhasil Disalin!';
-        setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
-    } catch (err) {
-        textArea.select(); document.execCommand('copy');
-        btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Disalin!';
-        setTimeout(() => { btn.innerHTML = originalContent; }, 2500);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const helper = document.createElement('textarea');
+        helper.value = text;
+        helper.setAttribute('readonly', '');
+        helper.style.position = 'fixed';
+        helper.style.opacity = '0';
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand('copy');
+        document.body.removeChild(helper);
+      }
+      flashButton(button, successLabel || 'Tersalin');
+      return true;
+    } catch (_) {
+      flashButton(button, 'Gagal menyalin');
+      return false;
     }
-}
+  }
+
+  function copyFromElement(sourceId, buttonId, label) {
+    const source = qs('#' + sourceId);
+    const button = qs('#' + buttonId);
+    if (!source) return;
+    copyText(source.value, button, label);
+  }
+
+  /* ---------- Init ---------- */
+  function init() {
+    renderSteps();
+    renderContacts();
+
+    on(qs('#panic-toggle-btn'), 'click', togglePanicMode);
+
+    on(qs('#report-btn'), 'click', () => copyFromElement('report-template', 'report-btn', 'Templat tersalin'));
+    on(qs('#alert-btn'), 'click', () => copyFromElement('alert-template', 'alert-btn', 'Pesan tersalin'));
+    on(qs('#copy-phone-btn'), 'click', () => {
+      const text = emergencyContacts.map((c) => `${c.name}: ${c.number}`).join('\n');
+      copyText(text, qs('#copy-phone-btn'), 'Nomor tersalin');
+    });
+
+    setPanicOpen(true);
+  }
+
+  IRK.emergency = { init, togglePanicMode, setPanicOpen, copyText };
+  init();
+})(typeof window !== 'undefined' ? window : globalThis);

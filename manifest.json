@@ -2,9 +2,37 @@
   "name": "Incident Response & Recovery Kit",
   "short_name": "Incident Kit",
   "description": "Panduan pertolongan pertama dan pemulihan setelah insiden siber.",
+  "lang": "id",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#f5f7fb",
-  "icons": [{ "src": "assets/smurf-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "background_color": "#E0E4D6",
+  "theme_color": "#E0E4D6",
+  "categories": ["education", "utilities", "security"],
+  "icons": [
+    {
+      "src": "assets/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/img/robot-head.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

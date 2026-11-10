@@ -4,223 +4,347 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#E0E4D6">
-  <meta name="description" content="Panduan pertolongan pertama dan pemulihan setelah insiden siber.">
-  <title>Incident Response Kit | Bantuan Siber</title>
-  
+  <meta name="description" content="Panduan pertolongan pertama dan pemulihan setelah insiden siber: phishing, APK berbahaya, akun dibajak, dan transfer ke penipu.">
+  <meta name="color-scheme" content="light dark">
+  <title>Incident Response Kit — Bantuan Pertama Insiden Siber</title>
+
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="assets/smurf-logo.svg" type="image/svg+xml">
-  
+  <link rel="icon" href="assets/img/robot-head.svg" type="image/svg+xml">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+
   <link rel="stylesheet" href="css/main.css">
 </head>
-<body class="antialiased min-h-screen flex flex-col">
-  
+<body>
+  <a class="skip-link" href="#main">Lewati ke konten utama</a>
+
   <header class="site-header">
-    <div class="container page-width header-inner">
-      <a class="brand" href="#home" aria-label="Incident Response Kit, beranda">
-        <img src="assets/smurf-logo.svg" alt="Maskot biru Incident Response Kit">
-        <span><strong>Incident Response</strong><small>CYBER SAFETY KIT</small></span>
+    <div class="page-width header-inner">
+      <a class="brand" href="#home">
+        <img src="assets/img/robot-head.svg" alt="" width="44" height="44">
+        <span class="brand-text">
+          <strong>Incident Response</strong>
+          <small>CYBER SAFETY KIT</small>
+        </span>
       </a>
-      <nav class="main-nav" aria-label="Navigasi utama">
+
+      <nav class="main-nav" id="main-nav" aria-label="Navigasi utama">
         <a href="#triaging">Panduan insiden</a>
         <a href="#link-checker">Cek mencurigakan</a>
         <a href="#reporting">Pusat bantuan</a>
+        <a href="#quiz-section">Latihan</a>
       </nav>
-      <a class="header-action" href="#panic-content">
-        <i class="fa-solid fa-life-ring"></i> Bantuan darurat
-      </a>
+
+      <div class="header-tools">
+        <button type="button" id="theme-toggle" class="icon-button" aria-pressed="false" aria-label="Aktifkan tema gelap">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+        </button>
+        <a class="header-action" href="#panic-content" aria-label="Bantuan darurat">
+          <i class="fa-solid fa-life-ring" aria-hidden="true"></i>
+          <span>Bantuan darurat</span>
+        </a>
+        <button type="button" id="nav-toggle" class="icon-button nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Buka menu navigasi">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main id="home" class="container page-width flex-grow">
-    
-    <section class="hero">
+  <main id="main" class="page-width">
+
+    <section id="home" class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <span class="eyebrow"><span class="status-dot"></span> PANDUAN KEAMANAN DIGITAL</span>
-        <h1>Ambil langkah yang tepat<br><span>saat insiden siber terjadi.</span></h1>
-        <p>Panduan praktis untuk mengenali ancaman, mengamankan akun, dan mencari bantuan. Mulai dari langkah darurat di bawah ini.</p>
-        <a class="primary-button" href="#triaging">Pilih jenis insiden <i class="fa-solid fa-arrow-down"></i></a>
+        <div class="eyebrow-row">
+          <span class="eyebrow"><span class="status-dot" aria-hidden="true"></span> PANDUAN KEAMANAN DIGITAL</span>
+          <span class="net-pill" id="net-status">
+            <span class="net-dot" aria-hidden="true"></span>
+            <span class="net-label">Siap digunakan</span>
+          </span>
+        </div>
+        <h1 id="hero-title">Ambil langkah yang tepat<br><span>saat insiden siber terjadi.</span></h1>
+        <p>Kenali ancaman, amankan akun, dan cari bantuan yang benar. Semua panduan berjalan di perangkat Anda — tanpa mengirim data ke mana pun.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#triaging">Pilih jenis insiden <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a>
+          <a class="ghost-button" href="#panic-content"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Saya butuh bantuan sekarang</a>
+        </div>
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="art-orbit orbit-one"></div>
         <div class="art-orbit orbit-two"></div>
-        <img src="assets/smurf-logo.svg" alt="Maskot">
+
+        <!-- Maskot di-inline agar komponennya bisa dianimasikan (idle) -->
+        <svg class="hero-mascot" viewBox="0 0 240 240" focusable="false" aria-hidden="true">
+          <circle cx="120" cy="120" r="108" fill="#E0E4D6"/>
+          <circle cx="120" cy="120" r="88" fill="#ffffff" opacity=".72"/>
+
+          <ellipse class="robot-shadow" cx="120" cy="227" rx="42" ry="6.5" fill="#1C2D45" opacity=".12"/>
+
+          <g class="robot-bob">
+            <!-- Antena -->
+            <g class="robot-antenna">
+              <path d="M120 20v12" stroke="#284C2B" stroke-width="7" stroke-linecap="round"/>
+              <circle cx="120" cy="17" r="9" fill="#6D92A6" stroke="#1C2D45" stroke-width="3"/>
+            </g>
+
+            <!-- Kepala -->
+            <g class="robot-head">
+              <path d="M62 48H48a12 12 0 0 0 0 24h14m116-24h14a12 12 0 0 1 0 24h-14" fill="#99A989" stroke="#1C2D45" stroke-width="5"/>
+              <rect x="60" y="34" width="120" height="88" rx="28" fill="#6D92A6" stroke="#1C2D45" stroke-width="6"/>
+              <rect x="72" y="46" width="96" height="62" rx="20" fill="#E0E4D6" stroke="#284C2B" stroke-width="4"/>
+              <g class="robot-eye"><circle class="eye-pupil" cx="99" cy="72" r="7" fill="#1C2D45"/></g>
+              <g class="robot-eye"><circle class="eye-pupil" cx="141" cy="72" r="7" fill="#1C2D45"/></g>
+              <path d="M101 89q19 15 38 0" fill="none" stroke="#284C2B" stroke-width="5" stroke-linecap="round"/>
+              <path d="M51 89l8 4m130-4-8 4" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+            </g>
+
+            <!-- Badan -->
+            <g class="robot-body">
+              <path d="M91 123v10m58-10v10" stroke="#1C2D45" stroke-width="6" stroke-linecap="round"/>
+              <rect x="70" y="128" width="100" height="57" rx="22" fill="#99A989" stroke="#1C2D45" stroke-width="5"/>
+
+              <g class="robot-arm robot-arm-left">
+                <path d="M70 142H55a10 10 0 0 0 0 20h15" fill="#6D92A6" stroke="#1C2D45" stroke-width="5"/>
+              </g>
+              <g class="robot-arm robot-arm-right">
+                <path d="M170 142h15a10 10 0 0 1 0 20h-15" fill="#6D92A6" stroke="#1C2D45" stroke-width="5"/>
+              </g>
+
+              <rect x="96" y="140" width="48" height="31" rx="10" fill="#1C2D45"/>
+              <path d="M104 154h32" stroke="#E0E4D6" stroke-width="4" stroke-linecap="round"/>
+              <circle class="screen-dot dot-1" cx="107" cy="163" r="3" fill="#6D92A6"/>
+              <circle class="screen-dot dot-2" cx="120" cy="163" r="3" fill="#E0E4D6"/>
+              <circle class="screen-dot dot-3" cx="133" cy="163" r="3" fill="#284C2B"/>
+
+              <path d="M92 186v17m56-17v17" stroke="#1C2D45" stroke-width="12" stroke-linecap="round"/>
+              <path d="M85 202h18a9 9 0 0 1 0 18H83a8 8 0 0 1 2-18Zm52 0h18a8 8 0 0 1 2 18h-20a9 9 0 0 1 0-18Z" fill="#284C2B" stroke="#1C2D45" stroke-width="4"/>
+            </g>
+          </g>
+        </svg>
       </div>
     </section>
 
     <section id="panic-content" class="emergency-panel" aria-labelledby="emergency-title">
       <div class="emergency-heading">
-        <div class="emergency-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div>
-          <span class="eyebrow red-eyebrow">BUTUH BANTUAN SEKARANG?</span>
+        <div class="emergency-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+        <div class="emergency-title">
+          <span class="eyebrow">BUTUH BANTUAN SEKARANG?</span>
           <h2 id="emergency-title">Lakukan tiga langkah pertama ini</h2>
         </div>
-        <button onclick="togglePanicMode()" id="panic-toggle-btn" class="collapse-button" aria-expanded="true" aria-controls="emergency-details">
-          Tutup <i class="fa-solid fa-chevron-up" id="panic-chevron"></i>
+        <button type="button" id="panic-toggle-btn" class="collapse-button" aria-expanded="true" aria-controls="emergency-details">
+          <span id="panic-toggle-text">Tutup</span>
+          <i class="fa-solid fa-chevron-up" id="panic-chevron" aria-hidden="true"></i>
         </button>
       </div>
+
       <div id="emergency-details">
-        <div id="instant-steps" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div id="instant-steps" class="steps-grid"></div>
+
         <div class="contact-heading">
-          <h3>Hubungi layanan resmi</h3>
-          <p>Gunakan nomor resmi yang relevan dengan akun atau transaksi Anda.</p>
+          <div>
+            <h3>Hubungi layanan resmi</h3>
+            <p>Gunakan nomor resmi yang sesuai dengan akun atau transaksi Anda.</p>
+          </div>
+          <button type="button" id="copy-phone-btn" class="secondary-button">
+            <i class="fa-regular fa-copy" aria-hidden="true"></i> Salin semua nomor
+          </button>
         </div>
-        <div id="emergency-contacts" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"></div>
+        <div id="emergency-contacts" class="contacts-grid"></div>
       </div>
     </section>
 
-    <section id="triaging" class="content-section">
+    <section id="triaging" class="content-section" aria-labelledby="triaging-title">
       <div class="section-heading">
         <span class="section-kicker">01 / TINDAKAN</span>
         <div>
-          <h2>Apa yang terjadi?</h2>
-          <p>Pilih situasi yang paling sesuai untuk melihat panduan pemulihan.</p>
+          <h2 id="triaging-title">Apa yang terjadi?</h2>
+          <p>Pilih situasi yang paling sesuai untuk melihat panduan pemulihan langkah demi langkah.</p>
         </div>
       </div>
-      <div id="incident-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+      <div id="incident-cards" class="cards-grid"></div>
     </section>
 
-    <section id="checklist-section" class="content-section hidden">
+    <section id="checklist-section" class="content-section hidden" aria-labelledby="checklist-title">
       <div class="section-heading">
         <span class="section-kicker">LANGKAH PEMULIHAN</span>
         <div>
-          <h2>Tindakan yang disarankan</h2>
-          <p>Ikuti langkah berikut satu per satu.</p>
+          <h2 id="checklist-title">Tindakan yang disarankan</h2>
+          <p>Kerjakan satu per satu. Centang untuk menandai yang sudah selesai.</p>
         </div>
       </div>
-      <div class="card-glass checklist-card" id="checklist-container"></div>
+      <div class="card checklist-card" id="checklist-container"></div>
     </section>
 
-    <section id="link-checker" class="content-section">
+    <section id="link-checker" class="content-section" aria-labelledby="checker-title">
       <div class="section-heading">
         <span class="section-kicker">02 / PERIKSA</span>
         <div>
-          <h2>Cek link atau pesan</h2>
-          <p>Kenali tanda-tanda umum phishing dan pesan penipuan.</p>
+          <h2 id="checker-title">Cek link atau pesan</h2>
+          <p>Analisis berbasis pola untuk mengenali tanda phishing. Berjalan sepenuhnya di browser Anda.</p>
         </div>
       </div>
-      <div class="card-glass feature-card">
-        <div class="tabs" role="tablist">
-          <button onclick="switchCheckerTab('link')" id="tab-link" class="active" role="tab"><i class="fa-solid fa-link"></i> Cek link</button>
-          <button onclick="switchCheckerTab('message')" id="tab-message" role="tab"><i class="fa-solid fa-comment-dots"></i> Cek pesan</button>
+
+      <div class="card feature-card">
+        <div class="tabs" role="tablist" aria-label="Jenis pemeriksaan">
+          <button type="button" id="tab-link" class="tab active" role="tab" aria-selected="true" aria-controls="input-link" tabindex="0">
+            <i class="fa-solid fa-link" aria-hidden="true"></i> Cek link
+          </button>
+          <button type="button" id="tab-message" class="tab" role="tab" aria-selected="false" aria-controls="input-message" tabindex="-1">
+            <i class="fa-solid fa-comment-dots" aria-hidden="true"></i> Cek pesan
+          </button>
         </div>
-        
-        <div id="input-link">
+
+        <div id="input-link" role="tabpanel" aria-labelledby="tab-link">
           <label class="field-label" for="suspicious-url">Tempel alamat link yang ingin diperiksa</label>
           <div class="input-row">
-            <input type="text" id="suspicious-url" placeholder="Contoh: https://contoh-situs.com/login">
-            <button onclick="analyzeLink()" class="primary-button">Analisis link</button>
+            <input type="text" id="suspicious-url" autocomplete="off" spellcheck="false"
+                   placeholder="Contoh: https://contoh-situs.com/login">
+            <button type="button" id="analyze-link-btn" class="primary-button">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Analisis link
+            </button>
+          </div>
+          <div class="samples">
+            <span>Contoh cepat:</span>
+            <button type="button" id="sample-link" class="chip">Link phishing</button>
+            <button type="button" id="sample-link-safe" class="chip">Domain resmi</button>
           </div>
         </div>
-        
-        <div id="input-message" class="hidden">
+
+        <div id="input-message" class="hidden" role="tabpanel" aria-labelledby="tab-message">
           <label class="field-label" for="suspicious-message">Tempel isi SMS, WhatsApp, atau email</label>
           <textarea id="suspicious-message" rows="4" placeholder="Salin isi pesan mencurigakan di sini..."></textarea>
-          <button onclick="analyzeMessage()" class="primary-button message-submit">Analisis pesan</button>
+          <div class="samples">
+            <span>Contoh cepat:</span>
+            <button type="button" id="sample-message" class="chip">SMS hadiah palsu</button>
+          </div>
+          <button type="button" id="analyze-message-btn" class="primary-button message-submit">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Analisis pesan
+          </button>
         </div>
-        
-        <div id="checker-results" class="hidden mt-6"></div>
-        <p class="privacy-note"><i class="fa-solid fa-lock"></i> Pemeriksaan dilakukan di perangkat ini. Jangan masukkan kata sandi atau kode OTP.</p>
+
+        <div id="checker-results" class="hidden" aria-live="polite"></div>
+        <div id="checker-history" class="hidden"></div>
+
+        <p class="privacy-note">
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          Pemeriksaan dilakukan di perangkat ini. Jangan pernah memasukkan kata sandi, PIN, atau kode OTP.
+        </p>
       </div>
     </section>
 
     <div class="two-column content-section">
-      <section id="reporting">
+      <section id="reporting" aria-labelledby="reporting-title">
         <div class="section-heading compact-heading">
           <span class="section-kicker">03 / CARI BANTUAN</span>
           <div>
-            <h2>Pusat pelaporan</h2>
+            <h2 id="reporting-title">Pusat pelaporan</h2>
             <p>Gunakan kanal resmi untuk membuat laporan.</p>
           </div>
         </div>
-        <div class="card-glass feature-card report-card">
+
+        <div class="card feature-card report-card">
           <a class="resource-link" href="https://cekrekening.id" target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-building-columns"></i>
+            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
             <span><strong>CekRekening.id</strong><small>Laporkan rekening yang terindikasi penipuan.</small></span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
           </a>
           <a class="resource-link" href="https://aduankonten.id" target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-globe"></i>
+            <i class="fa-solid fa-globe" aria-hidden="true"></i>
             <span><strong>AduanKonten.id</strong><small>Laporkan situs atau konten digital mencurigakan.</small></span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
           </a>
           <a class="resource-link" href="https://patrolisiber.id" target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-shield-halved"></i>
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
             <span><strong>PatroliSiber.id</strong><small>Kanal aduan kejahatan siber Bareskrim Polri.</small></span>
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
           </a>
-          
-          <div class="template-block mt-6">
+
+          <div class="template-block">
             <div class="template-title">
               <strong>Templat laporan</strong>
-              <button onclick="copyToClipboard('report-template','report-btn')" id="report-btn" class="secondary-button"><i class="fa-regular fa-copy"></i> Salin</button>
+              <button type="button" id="report-btn" class="secondary-button">
+                <i class="fa-regular fa-copy" aria-hidden="true"></i> Salin
+              </button>
             </div>
-            <textarea id="report-template" rows="5" readonly>Waktu Kejadian: [Isi waktu dan tanggal]
-Nomor Rekening Tujuan: [Nomor rekening & nama bank]
-Platform/Aplikasi: [WhatsApp/Instagram/SMS/dll]
-Kronologi Singkat: [Jelaskan singkat kejadian]
-Bukti: [Bukti transfer, chat, atau screenshot]</textarea>
+            <textarea id="report-template" rows="6" readonly aria-label="Templat laporan kejadian"></textarea>
           </div>
         </div>
       </section>
 
-      <section id="alert-gen">
+      <section id="alert-gen" aria-labelledby="alert-title">
         <div class="section-heading compact-heading">
           <span class="section-kicker">04 / LINDUNGI KONTAK</span>
           <div>
-            <h2>Beri tahu keluarga</h2>
+            <h2 id="alert-title">Beri tahu keluarga</h2>
             <p>Cegah pelaku menghubungi orang terdekat Anda.</p>
           </div>
         </div>
-        <div class="card-glass feature-card alert-card">
+
+        <div class="card feature-card alert-card">
           <div class="notice">
-            <i class="fa-solid fa-bullhorn"></i>
+            <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
             <p>Salin pesan ini dan bagikan ke grup keluarga atau teman dekat.</p>
           </div>
-          <textarea id="alert-template" rows="8" readonly>PENGUMUMAN PENTING:
-Akun/perangkat saya sedang terindikasi mengalami peretasan. Mohon abaikan pesan mencurigakan yang meminta uang atau data pribadi atas nama saya. Jangan lakukan transfer sebelum menghubungi saya langsung. Terima kasih.</textarea>
-          <button onclick="copyToClipboard('alert-template','alert-btn')" id="alert-btn" class="primary-button full-button mt-4"><i class="fa-regular fa-copy"></i> Salin pesan peringatan</button>
+          <textarea id="alert-template" rows="8" readonly aria-label="Pesan peringatan untuk keluarga"></textarea>
+          <button type="button" id="alert-btn" class="primary-button full-button">
+            <i class="fa-regular fa-copy" aria-hidden="true"></i> Salin pesan peringatan
+          </button>
         </div>
       </section>
     </div>
 
-    <section id="quiz-section" class="content-section">
+    <section id="quiz-section" class="content-section" aria-labelledby="quiz-title">
       <div class="section-heading">
         <span class="section-kicker">05 / BELAJAR</span>
         <div>
-          <h2>Uji kewaspadaan digital</h2>
-          <p>Latih responsmu lewat skenario yang sering terjadi.</p>
+          <h2 id="quiz-title">Uji kewaspadaan digital</h2>
+          <p>Sepuluh skenario yang paling sering menimpa pengguna di Indonesia.</p>
         </div>
       </div>
-      <div id="quiz-container" class="card-glass feature-card"></div>
+      <div id="quiz-container" class="card feature-card"></div>
     </section>
 
-    <section id="disclaimer" class="disclaimer">
-      <i class="fa-solid fa-circle-info"></i>
+    <aside id="disclaimer" class="disclaimer">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
       <div>
         <strong>Panduan pertolongan pertama</strong>
         <p>Aplikasi ini bukan pengganti laporan resmi. Analisis bersifat rule-based, berjalan di perangkat, dan tidak menjamin suatu link atau pesan aman.</p>
       </div>
-    </section>
+    </aside>
   </main>
 
   <footer class="site-footer">
-    <div class="container page-width flex justify-between py-6">
-      <span>Incident Response Kit | SMK TI Airlangga Samarinda</span>
+    <div class="page-width footer-inner">
+      <span>&copy; <span id="year">2026</span> Incident Response Kit — SMK TI Airlangga Samarinda</span>
       <span>Guardians of the Digital Space</span>
     </div>
   </footer>
 
+  <button type="button" id="to-top" class="to-top" aria-label="Kembali ke atas">
+    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <div id="sw-toast" class="sw-toast hidden" role="status">
+    <span>Versi baru tersedia.</span>
+    <button type="button" id="sw-reload" class="secondary-button">Muat ulang</button>
+  </div>
+
+  <noscript>
+    <div class="noscript-warning">
+      Aplikasi ini membutuhkan JavaScript untuk menampilkan panduan dan alat pemeriksaan.
+    </div>
+  </noscript>
+
   <script src="js/data.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/analyzer.js"></script>
   <script src="js/incidents.js"></script>
   <script src="js/emergency.js"></script>
   <script src="js/checker.js"></script>
   <script src="js/quiz.js"></script>
+  <script src="js/mascot.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

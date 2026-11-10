@@ -1,88 +1,159 @@
-// INIT: Render Cards
-// =============================================
-incidents.forEach(incident => {
-    const card = document.createElement('button');
-    card.className = `incident-card group text-left p-5 rounded-2xl border border-purple-500/30 bg-purple-900/20 ${incident.theme.borderHover} transition-all duration-300 focus:outline-none focus:ring-2 ${incident.theme.ring} hover:-translate-y-1 hover:bg-purple-900/40 flex flex-col h-full`;
-    card.onclick = () => showChecklist(incident);
-    card.innerHTML = `
-        <div class="flex items-center mb-3">
-            <div class="w-12 h-12 rounded-lg ${incident.theme.iconBg} ${incident.theme.text} border border-purple-500/20 flex items-center justify-center text-xl mr-4">
-                <i class="fa-solid ${incident.icon}"></i>
-            </div>
-            <h3 class="font-bold text-white text-lg leading-tight">${incident.title}</h3>
-        </div>
-        <p class="text-sm text-purple-200/70 flex-grow">${incident.desc}</p>
-        <div class="mt-4 text-xs font-semibold ${incident.theme.text} flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            Lihat Solusi <i class="fa-solid fa-arrow-right ml-1"></i>
-        </div>
-    `;
-    cardsContainer.appendChild(card);
-});
+/* =========================================================
+   incidents.js — Kartu insiden + checklist pemulihan
+   Progres disimpan per insiden di localStorage.
+   ========================================================= */
+(function (global) {
+  'use strict';
 
-// =============================================
-// FUNC: Checklists & Progress Bar Fix
-// =============================================
-function showChecklist(incident) {
-    checklistSection.classList.remove('hidden');
-    let checklistHTML = `
-        <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between border-b border-purple-500/30 pb-4">
-            <div>
-                <p class="text-purple-300 text-sm mb-1">Menampilkan panduan pemulihan untuk:</p>
-                <h3 class="text-xl font-bold text-white">${incident.title}</h3>
-            </div>
-            <span class="mt-2 md:mt-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 border border-red-500/30 text-red-300">
-                <i class="fa-solid fa-stopwatch mr-1.5"></i> Lakukan Segera
-            </span>
-        </div>
-        
-        <!-- GLOBAL PROGRESS BAR -->
-        <div class="mb-6">
-            <div class="flex justify-between text-xs text-purple-300 mb-1 font-semibold">
-                <span>Progress Pemulihan</span>
-                <span id="checklist-progress-text">0%</span>
-            </div>
-            <div class="w-full bg-purple-950/50 rounded-full h-2 border border-purple-500/20">
-                <div id="checklist-progress-bar" class="bg-fuchsia-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-        </div>
-        <div class="space-y-3">
-    `;
+  const IRK = global.IRK;
+  const { escapeHtml: esc, storage, qs, qsa, on } = IRK.util;
+  const incidents = IRK.data.incidents;
 
-    incident.checklist.forEach((item) => {
-        checklistHTML += `
-            <label class="group flex items-start p-4 bg-purple-900/30 border border-purple-500/30 rounded-xl cursor-pointer hover:bg-purple-800/40 transition-all duration-200">
-                <div class="relative flex items-center justify-center mt-0.5 mr-4">
-                    <input type="checkbox" onchange="updateChecklistProgress()" class="recovery-checkbox peer w-6 h-6 border-2 border-purple-400/50 rounded text-fuchsia-500 focus:ring-fuchsia-500/50 focus:ring-offset-0 cursor-pointer transition-all bg-[#1a0f2e]/50 checked:border-fuchsia-500">
-                </div>
-                <span class="text-purple-100 text-sm md:text-base leading-relaxed peer-checked:line-through peer-checked:text-purple-400/50 transition-all">${item}</span>
-            </label>
-        `;
+  const state = { activeId: null };
+
+  /* ---------- Render kartu ---------- */
+  function renderCards() {
+    const container = qs('#incident-cards');
+    if (!container) return;
+
+    container.innerHTML = incidents
+      .map(
+        (incident) => `
+        <button type="button" class="incident-card" data-tone="${esc(incident.tone)}"
+                data-incident-id="${esc(incident.id)}" aria-controls="checklist-section">
+          <span class="incident-top">
+            <span class="incident-icon"><i class="fa-solid ${esc(incident.icon)}" aria-hidden="true"></i></span>
+            <span class="incident-title">${esc(incident.title)}</span>
+          </span>
+          <span class="incident-desc">${esc(incident.desc)}</span>
+          <span class="incident-cta">Lihat langkah <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+        </button>`
+      )
+      .join('');
+  }
+
+  /* ---------- Checklist ---------- */
+  function showChecklist(incident) {
+    const section = qs('#checklist-section');
+    const container = qs('#checklist-container');
+    if (!section || !container) return;
+
+    state.activeId = incident.id;
+    const storageKey = 'checklist:' + incident.id;
+    const completed = new Set(storage.get(storageKey, []));
+
+    const items = incident.checklist
+      .map((item, index) => {
+        const done = completed.has(index);
+        return `
+        <li>
+          <label class="check-item${done ? ' is-done' : ''}">
+            <input type="checkbox" class="check-input" data-step="${index}" ${done ? 'checked' : ''}>
+            <span class="check-box" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+            <span class="check-text">${esc(item)}</span>
+          </label>
+        </li>`;
+      })
+      .join('');
+
+    container.innerHTML = `
+      <div class="checklist-head">
+        <div>
+          <p class="checklist-label">Panduan pemulihan untuk</p>
+          <h3>${esc(incident.title)}</h3>
+        </div>
+        <span class="badge badge-urgent">
+          <i class="fa-solid fa-stopwatch" aria-hidden="true"></i> ${esc(incident.eta)}
+        </span>
+      </div>
+
+      <div class="progress">
+        <div class="progress-meta">
+          <span id="progress-label">Progres pemulihan</span>
+          <span id="checklist-progress-text" aria-live="polite">0%</span>
+        </div>
+        <div class="progress-track" id="checklist-progress-bar"
+             role="progressbar" aria-labelledby="progress-label"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <ul class="checklist">${items}</ul>
+
+      <div class="checklist-foot">
+        <p class="checklist-done" id="checklist-done" hidden>
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          Semua langkah selesai. Simpan bukti dan pantau akun Anda beberapa hari ke depan.
+        </p>
+        <button type="button" class="link-button" id="checklist-reset">
+          <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset progres
+        </button>
+      </div>`;
+
+    section.classList.remove('hidden');
+
+    const checkboxes = qsa('.check-input', container);
+    checkboxes.forEach((box) => {
+      on(box, 'change', () => {
+        const index = Number(box.dataset.step);
+        if (box.checked) completed.add(index);
+        else completed.delete(index);
+        box.closest('.check-item').classList.toggle('is-done', box.checked);
+        storage.set(storageKey, Array.from(completed).sort((a, b) => a - b));
+        updateProgress(checkboxes);
+      });
     });
 
-    checklistHTML += `</div>`;
-    checklistContainer.innerHTML = checklistHTML;
-    setTimeout(() => { checklistSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
-}
+    on(qs('#checklist-reset'), 'click', () => {
+      completed.clear();
+      storage.remove(storageKey);
+      checkboxes.forEach((box) => {
+        box.checked = false;
+        box.closest('.check-item').classList.remove('is-done');
+      });
+      updateProgress(checkboxes);
+      checkboxes[0] && checkboxes[0].focus();
+    });
 
-function updateChecklistProgress() {
-    const checkboxes = document.querySelectorAll('.recovery-checkbox');
+    updateProgress(checkboxes);
+
+    setTimeout(() => {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  function updateProgress(checkboxes) {
     const total = checkboxes.length;
-    if (total === 0) return;
-    const checked = document.querySelectorAll('.recovery-checkbox:checked').length;
-    const percentage = Math.round((checked / total) * 100);
-    
-    document.getElementById('checklist-progress-text').innerText = `${percentage}%`;
-    const bar = document.getElementById('checklist-progress-bar');
-    bar.style.width = `${percentage}%`;
-    if (percentage === 100) {
-        bar.classList.remove('bg-fuchsia-500');
-        bar.classList.add('bg-green-500');
-    } else {
-        bar.classList.add('bg-fuchsia-500');
-        bar.classList.remove('bg-green-500');
+    const checked = checkboxes.filter((box) => box.checked).length;
+    const percent = total ? Math.round((checked / total) * 100) : 0;
+
+    const text = qs('#checklist-progress-text');
+    const track = qs('#checklist-progress-bar');
+    if (text) text.textContent = percent + '%';
+    if (track) {
+      track.setAttribute('aria-valuenow', String(percent));
+      track.classList.toggle('is-complete', percent === 100);
+      const fill = qs('.progress-fill', track);
+      if (fill) fill.style.width = percent + '%';
     }
-}
 
-// =============================================
+    const done = qs('#checklist-done');
+    if (done) done.hidden = percent < 100;
+  }
 
+  /* ---------- Init ---------- */
+  function init() {
+    renderCards();
+    const container = qs('#incident-cards');
+    on(container, 'click', (event) => {
+      const card = event.target.closest('.incident-card');
+      if (!card) return;
+      const incident = incidents.find((item) => item.id === card.dataset.incidentId);
+      if (incident) showChecklist(incident);
+    });
+  }
 
+  IRK.incidents = { init, showChecklist, state };
+  init();
+})(typeof window !== 'undefined' ? window : globalThis);
