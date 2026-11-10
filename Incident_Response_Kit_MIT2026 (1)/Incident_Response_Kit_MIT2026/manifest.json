@@ -1,0 +1,10 @@
+{
+  "name": "Incident Response & Recovery Kit",
+  "short_name": "Incident Kit",
+  "description": "Panduan pertolongan pertama dan pemulihan setelah insiden siber.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#f5f7fb",
+  "icons": [{ "src": "assets/smurf-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

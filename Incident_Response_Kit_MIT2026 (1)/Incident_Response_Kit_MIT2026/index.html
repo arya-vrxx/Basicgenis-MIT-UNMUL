@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E0E4D6">
+  <meta name="description" content="Panduan pertolongan pertama dan pemulihan setelah insiden siber.">
+  <title>Incident Response Kit | Bantuan Siber</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/smurf-logo.svg" type="image/svg+xml">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+  
+  <header class="site-header">
+    <div class="container page-width header-inner">
+      <a class="brand" href="#home" aria-label="Incident Response Kit, beranda">
+        <img src="assets/smurf-logo.svg" alt="Maskot biru Incident Response Kit">
+        <span><strong>Incident Response</strong><small>CYBER SAFETY KIT</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <a href="#triaging">Panduan insiden</a>
+        <a href="#link-checker">Cek mencurigakan</a>
+        <a href="#reporting">Pusat bantuan</a>
+      </nav>
+      <a class="header-action" href="#panic-content">
+        <i class="fa-solid fa-life-ring"></i> Bantuan darurat
+      </a>
+    </div>
+  </header>
+
+  <main id="home" class="container page-width flex-grow">
+    
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="status-dot"></span> PANDUAN KEAMANAN DIGITAL</span>
+        <h1>Ambil langkah yang tepat<br><span>saat insiden siber terjadi.</span></h1>
+        <p>Panduan praktis untuk mengenali ancaman, mengamankan akun, dan mencari bantuan. Mulai dari langkah darurat di bawah ini.</p>
+        <a class="primary-button" href="#triaging">Pilih jenis insiden <i class="fa-solid fa-arrow-down"></i></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <img src="assets/smurf-logo.svg" alt="Maskot">
+      </div>
+    </section>
+
+    <section id="panic-content" class="emergency-panel" aria-labelledby="emergency-title">
+      <div class="emergency-heading">
+        <div class="emergency-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+          <span class="eyebrow red-eyebrow">BUTUH BANTUAN SEKARANG?</span>
+          <h2 id="emergency-title">Lakukan tiga langkah pertama ini</h2>
+        </div>
+        <button onclick="togglePanicMode()" id="panic-toggle-btn" class="collapse-button" aria-expanded="true" aria-controls="emergency-details">
+          Tutup <i class="fa-solid fa-chevron-up" id="panic-chevron"></i>
+        </button>
+      </div>
+      <div id="emergency-details">
+        <div id="instant-steps" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div class="contact-heading">
+          <h3>Hubungi layanan resmi</h3>
+          <p>Gunakan nomor resmi yang relevan dengan akun atau transaksi Anda.</p>
+        </div>
+        <div id="emergency-contacts" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"></div>
+      </div>
+    </section>
+
+    <section id="triaging" class="content-section">
+      <div class="section-heading">
+        <span class="section-kicker">01 / TINDAKAN</span>
+        <div>
+          <h2>Apa yang terjadi?</h2>
+          <p>Pilih situasi yang paling sesuai untuk melihat panduan pemulihan.</p>
+        </div>
+      </div>
+      <div id="incident-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <section id="checklist-section" class="content-section hidden">
+      <div class="section-heading">
+        <span class="section-kicker">LANGKAH PEMULIHAN</span>
+        <div>
+          <h2>Tindakan yang disarankan</h2>
+          <p>Ikuti langkah berikut satu per satu.</p>
+        </div>
+      </div>
+      <div class="card-glass checklist-card" id="checklist-container"></div>
+    </section>
+
+    <section id="link-checker" class="content-section">
+      <div class="section-heading">
+        <span class="section-kicker">02 / PERIKSA</span>
+        <div>
+          <h2>Cek link atau pesan</h2>
+          <p>Kenali tanda-tanda umum phishing dan pesan penipuan.</p>
+        </div>
+      </div>
+      <div class="card-glass feature-card">
+        <div class="tabs" role="tablist">
+          <button onclick="switchCheckerTab('link')" id="tab-link" class="active" role="tab"><i class="fa-solid fa-link"></i> Cek link</button>
+          <button onclick="switchCheckerTab('message')" id="tab-message" role="tab"><i class="fa-solid fa-comment-dots"></i> Cek pesan</button>
+        </div>
+        
+        <div id="input-link">
+          <label class="field-label" for="suspicious-url">Tempel alamat link yang ingin diperiksa</label>
+          <div class="input-row">
+            <input type="text" id="suspicious-url" placeholder="Contoh: https://contoh-situs.com/login">
+            <button onclick="analyzeLink()" class="primary-button">Analisis link</button>
+          </div>
+        </div>
+        
+        <div id="input-message" class="hidden">
+          <label class="field-label" for="suspicious-message">Tempel isi SMS, WhatsApp, atau email</label>
+          <textarea id="suspicious-message" rows="4" placeholder="Salin isi pesan mencurigakan di sini..."></textarea>
+          <button onclick="analyzeMessage()" class="primary-button message-submit">Analisis pesan</button>
+        </div>
+        
+        <div id="checker-results" class="hidden mt-6"></div>
+        <p class="privacy-note"><i class="fa-solid fa-lock"></i> Pemeriksaan dilakukan di perangkat ini. Jangan masukkan kata sandi atau kode OTP.</p>
+      </div>
+    </section>
+
+    <div class="two-column content-section">
+      <section id="reporting">
+        <div class="section-heading compact-heading">
+          <span class="section-kicker">03 / CARI BANTUAN</span>
+          <div>
+            <h2>Pusat pelaporan</h2>
+            <p>Gunakan kanal resmi untuk membuat laporan.</p>
+          </div>
+        </div>
+        <div class="card-glass feature-card report-card">
+          <a class="resource-link" href="https://cekrekening.id" target="_blank" rel="noopener noreferrer">
+            <i class="fa-solid fa-building-columns"></i>
+            <span><strong>CekRekening.id</strong><small>Laporkan rekening yang terindikasi penipuan.</small></span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <a class="resource-link" href="https://aduankonten.id" target="_blank" rel="noopener noreferrer">
+            <i class="fa-solid fa-globe"></i>
+            <span><strong>AduanKonten.id</strong><small>Laporkan situs atau konten digital mencurigakan.</small></span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <a class="resource-link" href="https://patrolisiber.id" target="_blank" rel="noopener noreferrer">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span><strong>PatroliSiber.id</strong><small>Kanal aduan kejahatan siber Bareskrim Polri.</small></span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          
+          <div class="template-block mt-6">
+            <div class="template-title">
+              <strong>Templat laporan</strong>
+              <button onclick="copyToClipboard('report-template','report-btn')" id="report-btn" class="secondary-button"><i class="fa-regular fa-copy"></i> Salin</button>
+            </div>
+            <textarea id="report-template" rows="5" readonly>Waktu Kejadian: [Isi waktu dan tanggal]
+Nomor Rekening Tujuan: [Nomor rekening & nama bank]
+Platform/Aplikasi: [WhatsApp/Instagram/SMS/dll]
+Kronologi Singkat: [Jelaskan singkat kejadian]
+Bukti: [Bukti transfer, chat, atau screenshot]</textarea>
+          </div>
+        </div>
+      </section>
+
+      <section id="alert-gen">
+        <div class="section-heading compact-heading">
+          <span class="section-kicker">04 / LINDUNGI KONTAK</span>
+          <div>
+            <h2>Beri tahu keluarga</h2>
+            <p>Cegah pelaku menghubungi orang terdekat Anda.</p>
+          </div>
+        </div>
+        <div class="card-glass feature-card alert-card">
+          <div class="notice">
+            <i class="fa-solid fa-bullhorn"></i>
+            <p>Salin pesan ini dan bagikan ke grup keluarga atau teman dekat.</p>
+          </div>
+          <textarea id="alert-template" rows="8" readonly>PENGUMUMAN PENTING:
+Akun/perangkat saya sedang terindikasi mengalami peretasan. Mohon abaikan pesan mencurigakan yang meminta uang atau data pribadi atas nama saya. Jangan lakukan transfer sebelum menghubungi saya langsung. Terima kasih.</textarea>
+          <button onclick="copyToClipboard('alert-template','alert-btn')" id="alert-btn" class="primary-button full-button mt-4"><i class="fa-regular fa-copy"></i> Salin pesan peringatan</button>
+        </div>
+      </section>
+    </div>
+
+    <section id="quiz-section" class="content-section">
+      <div class="section-heading">
+        <span class="section-kicker">05 / BELAJAR</span>
+        <div>
+          <h2>Uji kewaspadaan digital</h2>
+          <p>Latih responsmu lewat skenario yang sering terjadi.</p>
+        </div>
+      </div>
+      <div id="quiz-container" class="card-glass feature-card"></div>
+    </section>
+
+    <section id="disclaimer" class="disclaimer">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>
+        <strong>Panduan pertolongan pertama</strong>
+        <p>Aplikasi ini bukan pengganti laporan resmi. Analisis bersifat rule-based, berjalan di perangkat, dan tidak menjamin suatu link atau pesan aman.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container page-width flex justify-between py-6">
+      <span>Incident Response Kit | SMK TI Airlangga Samarinda</span>
+      <span>Guardians of the Digital Space</span>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/incidents.js"></script>
+  <script src="js/emergency.js"></script>
+  <script src="js/checker.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
